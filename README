@@ -1,0 +1,115 @@
+                      ppaml-vrep-automobile-plugin, v1.0.0
+
+This package provides a data collection plugin for the V-REP robotics simulator
+<http://coppeliarobotics.com/>.  The plugin is targeted at data collection
+following the model described at
+<http://prism2.mem.drexel.edu/~vefa/courses/SLAM/nebotJournal.pdf>, but it may
+be useful for other projects as well.
+
+For detailed installation instructions, see the INSTALL file.
+
+For examples of use, see the examples directory.
+
+Once you have installed the library and restarted V-REP, you'll have at your
+disposal five new Lua functions:
+
+  - simExtAutomobileInit(string directoryName, number L, number h, number a,
+                         number b, number theta0, number max_distance,
+                         number max_intensity)
+    Initializes the plugin.  Consequently, you must call this at least once
+    during your run, and we strongly recommend you do so before collecting any
+    data. :)  The parameters are:
+
+      - directoryName: The base directory for the output data.  If the
+        directory does not exist, the plugin will create it.  If the directory
+        does exist, the plugin will remove anything in it that looks like data
+        from a previous run.
+
+      - L, h, a, b, theta0: Model parameters as described in the paper.
+        Specifically:
+
+          - L: Distance between front and rear axles.
+
+          - h: Distance between center of rear axle and encoder on left rear
+            wheel.  In examples/simple.ttt, this parameter is zero, as no
+            encoder is used; instead, we measure position directly at the
+            center of the rear axle.
+
+          - a, b: Distance between the rear axle and the lidar sensor,
+            expressed as a 2D vector.  The basis vectors point in line with the
+            car and forward (for a) and in line with the axle and to the left
+            side of the vehicle (for b).
+
+          - theta0: Initial angle of the car, with 0 defined as due east and
+            increasing counterclockwise (i.e., in the positive k̂ direction).
+
+      - max_distance, max_intensity: Lidar parameters.  max_distance should be
+        set to the distance between the lidar sensors' apertures and their far
+        clip planes; in examples/simple.ttt, this is 10.  max_intensity is
+        entirely dependent on what code you're using to postprocess the data;
+        we've had it set at 32768, but you can pick whatever you want without
+        incident.
+
+  - simExtAutomobileRequestNoise(table2 xy, table2 angle, table2 speed,
+                                 table2 steeringAngle, table2 distance,
+                                 table2 intensity)
+    Requests that, in addition to the gathered data, the plugin also generate a
+    data set with artificial Gaussian noise added.  Should you wish to use this
+    function, we strongly recommend you only call it once per run.  The
+    parameters are two-element numeric tables describing the mean and standard
+    deviation for the noise applied to each measurement.
+
+  - simExtAutomobileSavePose(number simulationTime, number x, number y,
+                             number theta)
+    Records a pose (position and angle).  You should call this repeatedly to
+    save multiple poses over the course of a simulation.
+
+  - simExtAutomobileSaveControls(number simulationTime, number speed,
+                                 number steeringAngle)
+    Records measurements taken from control surfaces of the car--speed and
+    steering angle of the right front wheel.  (This model has Ackermann
+    steering; hence, the two front wheels will generally not be oriented at
+    equal angles.)  You should call this repeatedly to save multiple data over
+    the course of a simulation.
+
+  - simExtAutomobileSaveLaserPair(number simulationTime, table leftDepthBuffer,
+                                  table rightDepthBuffer, table leftImage,
+                                  table rightImage)
+    Records measurements from the lidar.  You should call this repeatedbly to
+    save multiple data over the course of a simulation.  So that you may
+    simulate a lidar with a wider angle than V-REP's distance sensor part
+    supports, you can pass two inputs, which will be concatenated in the plugin
+    before being written to the file.  Your input tables may be of any length,
+    but they must be the same length on each call to this function throughout a
+    single run--should you fail to maintainf this invariant, the plugin will
+    crash with a C++ exception, bringing down V-REP with it.
+
+The output directory tree will look like this:
+
+    output_dir
+    ├── ground
+    │   ├── slam_control.csv
+    │   ├── slam_gps.csv
+    │   ├── slam_laser.csv
+    │   └── slam_sensor.csv
+    ├── noisy
+    │   ├── slam_control.csv
+    │   ├── slam_gps.csv
+    │   ├── slam_laser.csv
+    │   └── slam_sensor.csv
+    └── properties.csv
+
+The properties.csv file contains run properties written with
+simExtAutomobileInit.  The ground subdirectory contains ground truth data; the
+noisy subdirectory contains data with additive noise.  In each subdirectory,
+you'll find
+
+  - slam_sensor.csv: A "table of contents" file that describes which sensor was
+    sampled at what time.
+
+  - slam_gps.csv: All poses saved with simExtAutomobileSavePose.
+
+  - slam_sensor.csv: All data saved with simExtAutomobileSaveControls.
+
+  - slam_laser.csv: All lidar measurements saved with
+    simExtAutomobileSaveLaserPair.
