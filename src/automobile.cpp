@@ -1,5 +1,5 @@
 /* automobile.cpp -- recording data about the car
- * Copyright (C) 2013  Galois, Inc.
+ * Copyright (C) 2013, 2014  Galois, Inc.
  *
  * This library is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -170,10 +170,10 @@ void registerLuaFunctions() {
         std::vector<float>,     // angle
         std::vector<float>,     // speed
         std::vector<float>,     // steering angle
-        std::vector<float>,     // distance
-        std::vector<float>>(    // intensity
+        std::vector<float>,     // intensity
+        std::vector<float>>(    // distance
             "simExtAutomobileRequestNoise",
-            "simExtAutomobileRequestNoise(table2 xy, table2 angle, table2 speed, table2 steeringAngle, table2 distance, table2 intensity)",
+            "simExtAutomobileRequestNoise(table2 xy, table2 angle, table2 speed, table2 steeringAngle, table2 intensity, table2 distance)",
         setNoiseParameters);
     vrep::exposeFunction<float, float, float, float>(
         "simExtAutomobileSavePose",

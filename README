@@ -51,8 +51,8 @@ disposal five new Lua functions:
         incident.
 
   - simExtAutomobileRequestNoise(table2 xy, table2 angle, table2 speed,
-                                 table2 steeringAngle, table2 distance,
-                                 table2 intensity)
+                                 table2 steeringAngle, table2 intensity,
+                                 table2 distance)
     Requests that, in addition to the gathered data, the plugin also generate a
     data set with artificial Gaussian noise added.  Should you wish to use this
     function, we strongly recommend you only call it once per run.  The
