@@ -20,7 +20,7 @@
 
 # Fire up Autoconf.
 AC_PREREQ([2.69])
-AC_INIT([libv_repExtAutomobile], [1.0.0], [bbarenblat@galois.com])
+AC_INIT([libv_repExtAutomobile], [1.0.1], [bbarenblat@galois.com])
 AC_CANONICAL_TARGET
 
 # This package will build but not function on OS X, so fail fast if we're on

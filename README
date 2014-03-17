@@ -1,4 +1,4 @@
-                      ppaml-vrep-automobile-plugin, v1.0.0
+                      ppaml-vrep-automobile-plugin, v1.0.1
 
 This package provides a data collection plugin for the V-REP robotics simulator
 <http://coppeliarobotics.com/>.  The plugin is targeted at data collection
